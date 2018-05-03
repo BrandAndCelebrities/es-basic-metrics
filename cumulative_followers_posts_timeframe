@@ -1,0 +1,62 @@
+source conf/es.cfg
+
+if [ $# -ne 4 ]; then 
+    echo "usage: $0 <user_id> <min_date> <max_date> [day|week|month|year]"
+    exit 1
+fi
+user_id=$1
+min_date=$2
+max_date=$3
+time_interval=$4
+
+curl -XGET "http://$es_host:$es_port/users/_search" -H 'Content-Type: application/json' -d'
+{
+  "size":0,
+  "query":{
+    "bool":{
+      "filter":[{
+        "term":{
+          "id":'$user_id'
+          }
+        },{
+        "range":{
+          "date":{
+            "gte":"'$min_date'",
+            "lt":"'$max_date'"
+          }
+        }}
+      ]
+    }
+  },
+  "aggs":{
+    "followers_per_day": {
+      "date_histogram": {
+        "field": "date",
+        "interval": "'$time_interval'",
+        "format":"yyyy-MM-dd"
+      },
+      "aggs":{
+        "followers":{
+          "sum":{
+            "field":"num_followers"
+          }
+        },
+        "cumulative_followers": {
+          "cumulative_sum": {
+            "buckets_path": "followers"
+          }
+        },
+        "posts":{
+          "sum":{
+            "field":"num_posts"
+          }
+        },
+        "cumulative_posts": {
+          "cumulative_sum": {
+            "buckets_path": "posts"
+          }
+        }
+      }
+    }
+  }
+}'

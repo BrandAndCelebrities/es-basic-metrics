@@ -1,0 +1,41 @@
+source conf/es.cfg
+
+if [ $# -ne 2 ]; then 
+    echo "usage: $0 <user_id> <max_date>"
+    exit 1
+fi
+user_id=$1
+max_date=$2
+
+curl -XGET "http://$es_host:$es_port/users/_search" -H 'Content-Type: application/json' -d'
+{
+  "size":0,
+  "query":{
+    "bool":{
+      "filter":[{
+        "term":{
+          "id":'$user_id'
+          }
+        },{
+        "range":{
+          "date":{
+            "lt":"'$max_date'"
+          }
+        }}
+      ]
+    }
+  },
+  "aggs":{
+    "followers":{
+      "sum":{
+        "field":"num_followers"
+      }
+    },
+    "posts":{
+      "sum":{
+        "field":"num_posts"
+      }
+    }
+  }
+}
+'

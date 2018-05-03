@@ -1,0 +1,25 @@
+source conf/es.cfg
+source conf/populate_users.cfg
+
+for user_id in `seq $user_id_min $user_id_max`; do
+
+    for n in `seq 1 $max_days`; do 
+
+        user_date=`gdate -d "-$n days" +%Y-%m-%d`; 
+
+        # random number of new followers on $user_date
+        user_num_followers=$(( RANDOM % max_followers ))
+
+        # random number of new posts on $user_date
+        user_num_posts=$(( RANDOM % max_posts ))
+
+        curl -XPOST 'http://$es_host:$es_port/users/doc' -H 'Content-Type:application/json' -d '
+        {
+          "id":'$user_id',
+          "date":"'$user_date'",
+          "num_followers":'$user_num_followers',
+          "num_posts":'$user_num_posts'
+        }'
+ 
+    done
+done

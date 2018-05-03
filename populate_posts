@@ -1,0 +1,33 @@
+source conf/es.cfg
+source conf/populate_posts.cfg
+
+for user_id in `seq $user_id_min $user_id_max`; do
+
+    for n in `seq 1 $max_days`; do 
+            
+        post_date=`gdate -d "-$n days" +%Y-%m-%d`
+
+        # random number of posts for a given user on a given day
+        num_posts=$(( RANDOM % max_posts ))
+
+        # indexes each post if at least one has been published
+        if [ $num_posts -gt 0 ]; then
+
+            for post_num in `seq 1 $num_posts`; do 
+
+                # random number of likes and comments for the current post
+                post_num_likes=$(( RANDOM % max_likes ))
+                post_num_comments=$(( RANDOM % max_comments ))
+
+                curl -XPOST 'http://$es_host:$es_port/posts/doc' -H 'Content-Type:application/json' -d '
+                {
+                  "id":"'${n}_${post_num}'",
+                  "user_id":$user_id,
+                  "date":"'$post_date'",
+                  "num_likes":$post_num_likes,
+                  "num_comments":$post_num_comments
+                }' 
+            done
+        fi
+    done
+done

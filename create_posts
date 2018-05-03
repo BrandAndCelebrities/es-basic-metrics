@@ -1,0 +1,21 @@
+source conf/es.cfg
+
+curl -XDELETE "http://$es_host:$es_port/posts" > /dev/null
+
+curl -XPUT "http://$es_host:$es_port/posts" -H 'Content-Type: application/json' -d'
+{
+  "mappings":{
+    "doc":{
+      "properties": { 
+        "id":{"type":"text"},
+        "user_id":{"type":"integer"},
+        "num_likes":{"type": "integer"}, 
+        "num_comments":{"type": "integer"}, 
+        "date":{
+          "type":   "date", 
+          "format": "yyyy-MM-dd"
+        }
+      }
+    }
+  }
+}'

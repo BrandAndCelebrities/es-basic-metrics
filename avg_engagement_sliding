@@ -1,0 +1,51 @@
+# config
+
+source conf/es.cfg
+
+if [ $# -ne 3 ]; then 
+    echo "usage: $0 <user_id> <min_date> <max_date>"
+    exit 1
+fi
+user_id=$1
+min_date=$2
+max_date=$3
+
+curl -XGET "http://$es_host:$es_port/posts/_search" -H 'Content-Type: application/json' -d'
+{
+  "size":0,
+  "query":{
+    "bool":{
+      "filter":[{
+        "term":{
+          "user_id":'$user_id'
+          }
+        },{
+        "range":{
+          "date":{
+            "gte":"'$min_date'",
+            "lt":"'$max_date'"
+          }
+        }}
+      ]
+    }
+  },
+  "aggs":{
+    "avg_engagement":{
+      "avg":{
+        "script":{
+          "source":"doc.num_likes.value + doc.num_comments.value"
+        }
+      }
+    },
+    "likes":{
+      "sum":{
+        "field":"num_likes"
+      }
+    },
+    "comments":{
+      "sum":{
+        "field":"num_comments"
+      }
+    }
+  }
+}'
