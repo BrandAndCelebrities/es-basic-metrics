@@ -1,6 +1,6 @@
 # Pourquoi ?
 
-À l'occasion de la refonte du collecteur Instagram, suite à la mise à jour de l'API, l'approche actuelle du processus de capture, d'aggrégation et d'indexation des métriques utilisées comme indicateurs de performance est remise en question. Objectif : permettre une plus grande souplesse dans l'utilisation des métriques de façon à pouvoir proposer en front des modalités étendues de visualisation de ces métriques.
+À l'occasion de la refonte du collecteur Instagram, suite à la mise à jour de l'API, l'approche actuelle du processus de capture, d'agrégation et d'indexation des métriques utilisées comme indicateurs de performance est remise en question. Objectif : permettre une plus grande souplesse dans l'utilisation des métriques de façon à pouvoir proposer en front des modalités étendues de visualisation de ces métriques.
 
 3 métriques sont utilisées comme indicateurs de performance :
 * le nombre de followers
@@ -51,7 +51,7 @@ Ce cumul pour un user donné est obtenu par deux requêtes :
   * celle contenue dans le script `cumulative_followers_posts` pour le calcul du cumul  du nombre de followers et de posts sur la période antérieure à la période désirée ; il prend en paramètres un user_id et une date max qui doit être égale à la date min du script suivant.
   * celle contenue dans le script `cumulative_followers_posts_timeframe` pour le calcul du nombre d followers et de posts sur une période de temps donnée ; il prend en paramètres un user_id, un intervalle de temps et une période de segmentation temporelle. 
 
-Par exemple, pour obtenir le cumul du nombre de followers et de posts du compte dont le user_id est 1, par mois, sur les trois derniers mois :
+Par exemple, pour obtenir le cumul du nombre de followers et de posts du compte dont le user_id est 1, par jour, sur le dernier mois :
 ```
 ./cumulative_followers_posts 1 now-1M | jsonlint -p
 ```
@@ -128,7 +128,7 @@ qui, après pretty printing, donne (extrait) :
   ...
 ```
 
-Dans ce scénario, il est nécessaire d'ajouter le cumul obtenue avec la pemière requête à ceux obtenus avec la seconde. Étudier la possibilité de tout calculer en une seule requête.
+Dans ce scénario, il est nécessaire d'ajouter le cumul obtenu avec la première requête à ceux obtenus avec la seconde. Étudier la possibilité de tout calculer en une seule requête.
 
 ### Nombre moyen d'engagements sur une fenêtre glissante
 Il est donné par la requête contenue dans le script `avg_engagement_sliding`, lequel prend en paramètres un user_id et un intervalle de temps. Par exemple, pour obtenir le nombre moyen d'engagements sur les posts du compte dont le user_id est 1 sur le dernier mois :
